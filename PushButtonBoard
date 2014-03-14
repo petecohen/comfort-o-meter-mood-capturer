@@ -2,12 +2,19 @@
 #include <PString.h>
 
 
+const int buttonPin = 2;     // the number of the pushbutton pin
+
+// variables will change:
+int buttonState = 0;         // variable for reading the pushbutton status
+
+
+
 XBee xbee = XBee();
 
 #define CODE_VERSION 2.3
 
 // variables
-unsigned long samplingDelay = 20; // default sampling delay in millis (SUPERCEDED BY ANYTHING STORED IN EEPROM)
+unsigned long samplingDelay = 500; // default sampling delay in millis (SUPERCEDED BY ANYTHING STORED IN EEPROM)
 unsigned long lastSampleTime = 0;
 String inputString = "";   // a string to hold incoming data
 
@@ -42,6 +49,8 @@ void setup() {
   Serial.begin(9600);
   xbee.setSerial(Serial);
 
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);    
 
   // while the serial stream is not open, do nothing.
   //
@@ -51,6 +60,7 @@ void setup() {
 
   char versionBuffer[10];
   sendInfoPayload("SensorMote (Google I/O) v" + String(dtostrf(CODE_VERSION, 6, 2, versionBuffer)));
+ 
   
 }
   
@@ -61,47 +71,28 @@ void setup() {
 // 2) Looks for button pushes
 // 3) Looks for config updates on the XBee network
 
-void loop() 
-
-  {
-
+void loop() {
   if ((millis() - lastSampleTime) > samplingDelay || lastSampleTime==0) {
     //Serial.println( "Getting Sample..." );
-    getSample();
+    getButtonPress();
     lastSampleTime = millis();
   } 
-
-  // Check Mesh network for sample rate update
-  checkForInput();  
 }
 
 // DIGI PIN READ ------------------------------------------------------------------------------------------------------
 
-}
-
-void loop(){
+void getButtonPress(){
   // read the state of the pushbutton value:
-  buttonState = digitalRead(buttonPin);
+  int buttonState = digitalRead(buttonPin);
 
   // check if the pushbutton is pressed.
   // if it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {     
-    // turn LED on:    
-    digitalWrite(ledPin, HIGH);  
+  if (buttonState == HIGH) { 
+    Serial.print ("The button has been pressed");    
+
   } 
   else {
-    // turn LED off:
-    digitalWrite(ledPin, LOW); 
+    Serial.print ("The button is off");    
+
   }
-}
-// ------------------------------------------------------------------------------------------------------
-
-  // Send readings to the ZigBee coordinator
-  char buffer[10];
-  String readings = "names=temp,pressure,humidity,light,altitude,mic,gas&values=";
-  readings += temperature;
-  sendInfoPayload(readings);
-
-  digitalWrite(loop_led, LOW);
-  sinceLast = 0;
 }
