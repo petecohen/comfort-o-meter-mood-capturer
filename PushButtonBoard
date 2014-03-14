@@ -1,4 +1,5 @@
 #include <XBee.h>
+#include <PString.h>
 
 
 XBee xbee = XBee();
@@ -51,6 +52,8 @@ void setup() {
   char versionBuffer[10];
   sendInfoPayload("SensorMote (Google I/O) v" + String(dtostrf(CODE_VERSION, 6, 2, versionBuffer)));
   
+}
+  
   // LOOP ------------------------------------------------------------------------------------------------------
 //
 // Main loop
@@ -58,7 +61,9 @@ void setup() {
 // 2) Looks for button pushes
 // 3) Looks for config updates on the XBee network
 
-void loop() {
+void loop() 
+
+  {
 
   if ((millis() - lastSampleTime) > samplingDelay || lastSampleTime==0) {
     //Serial.println( "Getting Sample..." );
